@@ -15,13 +15,12 @@ cache:
 script: "./gradlew clean build"
 
 before_install:
-    - chmod +x gradlew	
+    - chmod +x gradlew
 
-# CI 실행 완료시 메일로 알람
-notifications:
-  email:
-    recipients:
-      - znps@naver.com
+before_deploy:
+  - zip -r myTest *
+  - mkdir -p deploy
+  - mv myTest.zip deploy/myTest.zip	
 
 deploy:
   - provider: s3
@@ -31,7 +30,14 @@ deploy:
     region: ap-northeast-2
     skip_cleanup: true
     acl: public_read
+    local_dir: deploy
     wait-until-deployed: true
     on:
       repo: leedahoon/myTest #Github 주소
-      branch: master 
+      branch: master
+
+# CI 실행 완료시 메일로 알람
+notifications:
+  email:
+    recipients:
+      - znps@naver.com 
